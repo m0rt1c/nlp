@@ -12,6 +12,10 @@ import (
 	"github.com/chromium-netlog-parser/pkg/nlparser"
 )
 
+const (
+	help = "help"
+)
+
 var (
 	file = flag.String("file", "", "File to parsed")
 	pc   = 0
@@ -28,7 +32,7 @@ func parseFile(s string) (nlparser.NetLog, error) {
 	return nlparser.ParseNetLog(s)
 }
 
-func printHelp() {
+func printhelp() {
 	fmt.Println(`Commands:
     help, ?: show help text
     parse <file>: parse a new file
@@ -81,7 +85,65 @@ func handleShow(args []string, netlog *nlparser.NetLog) {
 			return
 		}
 		pc = int(index)
-	case "help":
+	case help:
+		fallthrough
+	default:
+		fmt.Println(`Options:
+      range: events ids range
+      id <number>: print event with given id
+      all: dumps all events may. this will output lots of data
+      next: print next event based on print counter
+      prev: print prev event based on print counter
+      set <number>: set print counter`)
+	}
+}
+
+func handleExtract(args []string, netlog *nlparser.NetLog) {
+	switch args[0] {
+	case "range":
+		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
+	case "id":
+		if len(args) < 2 {
+			return
+		}
+		index, err := strconv.ParseInt(args[1], 10, 64)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		e, ok := netlog.Events[int(index)]
+		if !ok {
+			fmt.Printf("IDs range from 0 to %d\n", len(netlog.Events))
+		} else {
+			fmt.Println(e)
+		}
+	case "all":
+		for k := range netlog.Events {
+			fmt.Println(netlog.Events[k])
+		}
+	case "next":
+		pc = pc + 1
+		if pc > len(netlog.Events) {
+			pc = 1
+		}
+		fmt.Println(netlog.Events[pc])
+	case "prev":
+		pc = pc - 1
+		if pc <= 0 {
+			pc = len(netlog.Events)
+		}
+		fmt.Println(netlog.Events[pc])
+	case "set":
+		if len(args) < 2 {
+			return
+		}
+		index, err := strconv.ParseInt(args[1], 10, 64)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		pc = int(index)
+	case help:
 		fallthrough
 	default:
 		fmt.Println(`Options:
@@ -124,8 +186,8 @@ func main() {
 			switch pieces[0] {
 			case "?":
 				fallthrough
-			case "help":
-				printHelp()
+			case help:
+				printhelp()
 			case "parse":
 				if len(pieces) < 2 {
 					fmt.Println("invalid command")
@@ -139,9 +201,15 @@ func main() {
 				}
 			case "show":
 				if len(pieces) < 2 {
-					handleShow([]string{"help"}, &netlog)
+					handleShow([]string{help}, &netlog)
 				} else {
 					handleShow(pieces[1:], &netlog)
+				}
+			case "extract":
+				if len(pieces) < 2 {
+					handleExtract([]string{help}, &netlog)
+				} else {
+					handleExtract(pieces[1:], &netlog)
 				}
 			case "q":
 				fallthrough
