@@ -28,10 +28,10 @@ func parseFile(s string) (nlparser.NetLog, error) {
 
 func printHelp() {
 	fmt.Println(`Commands:
-    help, ? : show help text
-    parse <file> : parse a new file
-    show <arg> : show something of the parsed netlog (use show help for more)
-    quit, q : exit`)
+    help, ?: show help text
+    parse <file>: parse a new file
+    show <arg>: show something of the parsed netlog (use show help for more)
+    quit, q: exit`)
 }
 
 func handleShow(args []string, netlog *nlparser.NetLog) {}
