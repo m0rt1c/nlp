@@ -211,7 +211,8 @@ func (n NetLog) FindDNSQueries() []DNSQuery {
 				al := p.Params["address_list"]
 				if al != nil {
 					for _, addr := range al.([]interface{}) {
-						req.AddressList = append(req.AddressList, net.ParseIP(addr.(string)))
+						saddr := strings.Split(addr.(string), ":")[0]
+						req.AddressList = append(req.AddressList, net.ParseIP(saddr))
 					}
 				}
 			}
