@@ -355,9 +355,9 @@ func (e Event) FindDependenciesIDs() []int {
 
 // PrintEvent prints an event
 func (e Event) String() string {
-	s := fmt.Sprintf("ID: %d\nType: %s\n", e.ID, e.Type)
+	s := fmt.Sprintf("ID: %d\nType: %s", e.ID, e.Type)
 	for i, p := range e.Parts {
-		s = fmt.Sprintf("%s    %d: %v\n", s, i, p)
+		s = fmt.Sprintf("%s\n    %d: %v", s, i, p)
 	}
 	return s
 }
