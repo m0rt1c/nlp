@@ -34,11 +34,11 @@ func parseFile(s string) (nlparser.NetLog, error) {
 
 func printhelp() {
 	fmt.Println(`Commands:
-    help, ?: show help text
-    parse <file>: parse a new file
-    show <arg>: show something of the parsed netlog (use show help for more)
-    extract <arg>: extract events of the parsed netlog (use show help for more)
-    quit, q: exit`)
+    (help|?): show help text
+    (parse|p) <file>: parse a new file
+    (show|s) <arg>: show something of the parsed netlog (use show help for more)
+    (extract|e) <arg>: extract events of the parsed netlog (use show help for more)
+    (quit|q): exit`)
 }
 
 func handleShow(args []string, netlog *nlparser.NetLog) {
@@ -165,6 +165,8 @@ func main() {
 				fallthrough
 			case help:
 				printhelp()
+			case "p":
+				fallthrough
 			case "parse":
 				if len(pieces) < 2 {
 					fmt.Println("invalid command")
@@ -176,12 +178,16 @@ func main() {
 						fmt.Printf("File parsed. Found %d events.\n", len(netlog.Events))
 					}
 				}
+			case "s":
+				fallthrough
 			case "show":
 				if len(pieces) < 2 {
 					handleShow([]string{help}, &netlog)
 				} else {
 					handleShow(pieces[1:], &netlog)
 				}
+			case "e":
+				fallthrough
 			case "extract":
 				if len(pieces) < 2 {
 					handleExtract([]string{help}, &netlog)
