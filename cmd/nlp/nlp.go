@@ -37,6 +37,7 @@ func printhelp() {
     help, ?: show help text
     parse <file>: parse a new file
     show <arg>: show something of the parsed netlog (use show help for more)
+    extract <arg>: extract events of the parsed netlog (use show help for more)
     quit, q: exit`)
 }
 
