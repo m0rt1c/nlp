@@ -100,59 +100,35 @@ func handleShow(args []string, netlog *nlparser.NetLog) {
 
 func handleExtract(args []string, netlog *nlparser.NetLog) {
 	switch args[0] {
-	case "range":
-		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
-	case "id":
-		if len(args) < 2 {
-			return
+	case "dns":
+		for _, x := range netlog.FindDNSQueries() {
+			fmt.Println(x)
 		}
-		index, err := strconv.ParseInt(args[1], 10, 64)
-		if err != nil {
-			log.Println(err)
-			return
+	case "url":
+		for _, x := range netlog.FindURLRequests() {
+			fmt.Println(x)
 		}
-		e, ok := netlog.Events[int(index)]
-		if !ok {
-			fmt.Printf("IDs range from 0 to %d\n", len(netlog.Events))
-		} else {
-			fmt.Println(e)
+	case "red":
+		for _, x := range netlog.FindRedirections() {
+			fmt.Println(x)
 		}
-	case "all":
-		for k := range netlog.Events {
-			fmt.Println(netlog.Events[k])
+	case "con":
+		for _, x := range netlog.FindOpenedSocket() {
+			fmt.Println(x)
 		}
-	case "next":
-		pc = pc + 1
-		if pc > len(netlog.Events) {
-			pc = 1
+	case "src":
+		for _, x := range netlog.FindSources() {
+			fmt.Println(x)
 		}
-		fmt.Println(netlog.Events[pc])
-	case "prev":
-		pc = pc - 1
-		if pc <= 0 {
-			pc = len(netlog.Events)
-		}
-		fmt.Println(netlog.Events[pc])
-	case "set":
-		if len(args) < 2 {
-			return
-		}
-		index, err := strconv.ParseInt(args[1], 10, 64)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		pc = int(index)
 	case help:
 		fallthrough
 	default:
 		fmt.Println(`Options:
-      range: events ids range
-      id <number>: print event with given id
-      all: dumps all events may. this will output lots of data
-      next: print next event based on print counter
-      prev: print prev event based on print counter
-      set <number>: set print counter`)
+      dns: print all dns queries
+      url: print all url requests
+      red: print all redirections
+      con: print all connections
+      src: print all sources. this may be a lot of data. you also need to have capture the netlog with --net-log-capture-mode=Everything flag.`)
 	}
 }
 
