@@ -34,9 +34,23 @@ func printHelp() {
     quit, q: exit`)
 }
 
-func handleShow(args []string, netlog *nlparser.NetLog) {}
+func handleShow(args []string, netlog *nlparser.NetLog) {
+	switch args[0] {
+	case "help":
+		fallthrough
+	default:
+		fmt.Println(`Options:
+      range: events ids range
+      <number>: print event with given id
+      all: dumps all events may. this will output lots of data
+      next: print next event based on print counter
+      prev: print prev event based on print counter
+      set <number>: set print counter`)
+	}
+}
 
 func main() {
+	flag.Parse()
 	var netlog nlparser.NetLog
 	var err error
 
@@ -78,7 +92,7 @@ func main() {
 				}
 			case "show":
 				if len(pieces) < 2 {
-					fmt.Println("invalid command")
+					handleShow([]string{"help"}, &netlog)
 				} else {
 					handleShow(pieces[1:], &netlog)
 				}
