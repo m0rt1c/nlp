@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/chromium-netlog-parser/pkg/nlparser"
@@ -13,6 +14,7 @@ import (
 
 var (
 	file = flag.String("file", "", "File to parsed")
+	pc   = 0
 )
 
 func parseFile(s string) (nlparser.NetLog, error) {
@@ -36,12 +38,55 @@ func printHelp() {
 
 func handleShow(args []string, netlog *nlparser.NetLog) {
 	switch args[0] {
+	case "range":
+		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
+	case "id":
+		if len(args) < 2 {
+			return
+		}
+		index, err := strconv.ParseInt(args[1], 10, 64)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		e, ok := netlog.Events[int(index)]
+		if !ok {
+			fmt.Printf("IDs range from 0 to %d\n", len(netlog.Events))
+		} else {
+			fmt.Println(e)
+		}
+	case "all":
+		for k := range netlog.Events {
+			fmt.Println(netlog.Events[k])
+		}
+	case "next":
+		pc = pc + 1
+		if pc > len(netlog.Events) {
+			pc = 1
+		}
+		fmt.Println(netlog.Events[pc])
+	case "prev":
+		pc = pc - 1
+		if pc <= 0 {
+			pc = len(netlog.Events)
+		}
+		fmt.Println(netlog.Events[pc])
+	case "set":
+		if len(args) < 2 {
+			return
+		}
+		index, err := strconv.ParseInt(args[1], 10, 64)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		pc = int(index)
 	case "help":
 		fallthrough
 	default:
 		fmt.Println(`Options:
       range: events ids range
-      <number>: print event with given id
+      id <number>: print event with given id
       all: dumps all events may. this will output lots of data
       next: print next event based on print counter
       prev: print prev event based on print counter
@@ -58,6 +103,8 @@ func main() {
 		netlog, err = parseFile(*file)
 		if err != nil {
 			log.Fatal(err)
+		} else {
+			fmt.Printf("File parsed. Found %d events.\n", len(netlog.Events))
 		}
 	}
 
