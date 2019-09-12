@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -118,8 +120,51 @@ func handleExtract(args []string, netlog *nlparser.NetLog) {
 			fmt.Println(x)
 		}
 	case "src":
-		for _, x := range netlog.FindSources() {
-			fmt.Println(x)
+		if len(args) < 2 {
+			fmt.Println("Not enough arguments")
+		} else {
+			_, err := os.Stat(args[1])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fileCount := 0
+			res := netlog.FindSources()
+			for _, x := range res {
+				u, err := url.Parse(x.ResourceName)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				parts := strings.Split(u.Path, "/")
+				name := parts[len(parts)-1]
+				if name == "" {
+					name = fmt.Sprintf("index-%d", fileCount)
+				}
+				_, err = os.Stat(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()))
+				if err != nil {
+					os.Mkdir(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()), os.ModePerm)
+				}
+				filePath := fmt.Sprintf("%s/%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname(), name)
+				file, err := os.Create(filePath)
+				if err != nil {
+					fmt.Printf("File %s was not created: %v\n", filePath, err)
+					continue
+				}
+				out := []byte{}
+				for _, part := range x.Base64EncodedBytes {
+					decoded, err := base64.StdEncoding.DecodeString(part)
+					if err != nil {
+						fmt.Printf("Skipped some bytes while writing %s because: %v\n", filePath, err)
+						continue
+					}
+					out = append(out, decoded...)
+				}
+				file.Write(out)
+				file.Close()
+				fileCount = fileCount + 1
+			}
+			fmt.Printf("Wrote %d out of %d files\n", fileCount, len(res))
 		}
 	case help:
 		fallthrough
@@ -129,7 +174,7 @@ func handleExtract(args []string, netlog *nlparser.NetLog) {
       url: print all url requests
       red: print all redirections
       con: print all connections
-      src: print all sources. this may be a lot of data. you also need to have capture the netlog with --net-log-capture-mode=Everything flag.`)
+      src <path>: save all sources in the given directory. You also need to have capture the netlog with --net-log-capture-mode=Everything flag.`)
 	}
 }
 
