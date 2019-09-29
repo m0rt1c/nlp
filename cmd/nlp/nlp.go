@@ -125,8 +125,11 @@ func handleExtract(args []string, netlog *nlparser.NetLog) {
 		} else {
 			_, err := os.Stat(args[1])
 			if err != nil {
-				fmt.Println(err)
-				return
+				err := os.Mkdir(args[1], os.ModePerm)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
 			}
 			fileCount := 0
 			res := netlog.FindSources()
