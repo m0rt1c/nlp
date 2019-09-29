@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	file = flag.String("file", "", "File to parsed")
+	file = flag.String("f", "", "File to parse")
 	pc   = 0
 )
 
@@ -95,9 +95,9 @@ func handleShow(args []string, netlog *nlparser.NetLog) {
       range: events ids range
       id <number>: print event with given id
       all: dumps all events may. this will output lots of data
-      next: print next event based on print counter
-      prev: print prev event based on print counter
-      set <number>: set print counter`)
+      next: print the next event based on print counter
+      prev: print the prev event based on print counter
+      set <number>: set the print counter`)
 	}
 }
 
@@ -174,7 +174,7 @@ func handleExtract(args []string, netlog *nlparser.NetLog) {
       url: print all url requests
       red: print all redirections
       con: print all connections
-      src <path>: save all sources in the given directory. You also need to have capture the netlog with --net-log-capture-mode=Everything flag.`)
+      src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`)
 	}
 }
 
