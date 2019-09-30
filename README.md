@@ -24,12 +24,12 @@ npl
 
 ### Show the event with id 1
 ```bash
-nlp -file /path/to/netlog.json
+nlp -f /path/to/netlog.json
 > show id 1
 ```
 
 ### Find all dns requests
 ```bash
-nlp -file /path/to/netlog.json
+nlp -f /path/to/netlog.json
 > extract dns
 ```
