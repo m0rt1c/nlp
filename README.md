@@ -1,6 +1,13 @@
 # chromium-netlog-parser
 Command line parser for chromium netlog
 
+## Feature: Extract all the sources from the netowrk
+```bash
+nlp -f /path/to/netlog.json
+> e src out
+```
+Will extract all the sources passed on the network to the ./out folder.
+
 ## NetLog
 [NetLog](https://www.chromium.org/developers/design-documents/network-stack/netlog) is chrome network logging system
 
@@ -13,12 +20,13 @@ Visit [chrome://net-export](chrome://net-export)
 ```bash
 chromium --log-net-log=/tmp/netlog.json --net-log-capture-mode=Everything
 ```
+The netlog capture mode flag is necessary to extract the sources.
 
-## Examples
+## Other Examples
 
 ### Show help
 ```bash
-npl
+nlp
 > help
 ```
 
