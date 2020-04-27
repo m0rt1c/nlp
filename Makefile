@@ -1,6 +1,6 @@
 GO ?= go
 GITREF = $(shell git describe --always --long --tags --dirty)
-GOBUILD_FLAGS = -ldflags "-X github.com/AndreaJegher/chrome-netlog-parser/pkg/build.GitCommitID=$(GITREF)"
+GOBUILD_FLAGS = -ldflags "-X github.com/AndreaJegher/chromium-netlog-parser/pkg/build.gitCommitID=$(GITREF)"
 
 GOINSTALL = $(GO) install
 GOBUILD = $(GO) build
@@ -14,7 +14,7 @@ install: install-nlp
 build: build-nlp
 
 install-nlp:
-	cd cmd/nlp; $(GOINSTALL)
+	cd cmd/nlp; $(GOINSTALL) $(GOBUILD_FLAGS)
 
 build-nlp:
-	$(GOBUILD) -o ./bin/nlp ./cmd/nlp
+	$(GOBUILD) $(GOBUILD_FLAGS) -o ./bin/nlp ./cmd/nlp
