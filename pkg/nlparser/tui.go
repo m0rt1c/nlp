@@ -8,22 +8,33 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/AndreaJegher/chromium-netlog-parser/pkg/nlparser"
 )
 
 const (
-	helpMessage = `Commands:
+	generalHelpMessage = `Commands:
     (help|?): show help text
     (parse|p) <file>: parse a new file
     (show|s) <arg>: show something of the parsed netlog (use show help for more)
     (extract|e) <arg>: extract events of the parsed netlog (use show help for more)
     (quit|q): exit`
+	showCommandHelpMessage = `Options:
+    range: events ids range
+    id <number>: print event with given id
+    all: dumps all events may. this will output lots of data
+    next: print the next event based on print counter
+    prev: print the prev event based on print counter
+    set <number>: set the print counter`
+	extractCommandHelpMessage = `Options:
+      dns: print all dns queries
+      url: print all url requests
+      red: print all redirections
+      con: print all connections
+      src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`
 )
 
 // Help returns the program instructions
 func Help() string {
-	return helpMessage
+	return generalHelpMessage
 }
 
 // HandleCommand parse and execute command on the given netlog
@@ -52,40 +63,38 @@ func HandleCommand(command string, netlog *NetLog) (string, error) {
 		fallthrough
 	case "show":
 		if len(pieces) < 2 {
-			handleShow([]string{help}, &netlog)
-		} else {
-			handleShow(pieces[1:], &netlog)
+			return showCommandHelpMessage, nil
 		}
+		return handleShow(pieces[1:], netlog)
 	case "e":
 		fallthrough
 	case "extract":
 		if len(pieces) < 2 {
-			handleExtract([]string{help}, &netlog)
-		} else {
-			handleExtract(pieces[1:], &netlog)
+			return extractCommandHelpMessage, nil
 		}
+		return handleExtract(pieces[1:], netlog)
 	case "q":
 		fallthrough
 	case "quit":
 		os.Exit(0)
 	default:
-		fmt.Println("invalid command")
+		return "invalid command", nil
 	}
 }
 
 // ParseFile parse a netlog json file
-func ParseFile(s string) (nlparser.NetLog, error) {
+func ParseFile(s string) (NetLog, error) {
 	info, err := os.Stat(s)
 	if err != nil {
-		return nlparser.NetLog{}, err
+		return NetLog{}, err
 	}
 	if info.IsDir() {
-		return nlparser.NetLog{}, fmt.Errorf("%s is not a valid file", s)
+		return NetLog{}, fmt.Errorf("%s is not a valid file", s)
 	}
-	return nlparser.ParseNetLog(s)
+	return ParseNetLog(s)
 }
 
-func handleShow(args []string, netlog *nlparser.NetLog) {
+func handleShow(args []string, netlog *NetLog) (string, error) {
 	switch args[0] {
 	case "range":
 		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
@@ -133,17 +142,11 @@ func handleShow(args []string, netlog *nlparser.NetLog) {
 	case help:
 		fallthrough
 	default:
-		fmt.Println(`Options:
-      range: events ids range
-      id <number>: print event with given id
-      all: dumps all events may. this will output lots of data
-      next: print the next event based on print counter
-      prev: print the prev event based on print counter
-      set <number>: set the print counter`)
+		return "invalid command", nil
 	}
 }
 
-func handleExtract(args []string, netlog *nlparser.NetLog) {
+func handleExtract(args []string, netlog *NetLog) (string, error) {
 	switch args[0] {
 	case "dns":
 		for _, x := range netlog.FindDNSQueries() {
@@ -214,11 +217,6 @@ func handleExtract(args []string, netlog *nlparser.NetLog) {
 	case help:
 		fallthrough
 	default:
-		fmt.Println(`Options:
-      dns: print all dns queries
-      url: print all url requests
-      red: print all redirections
-      con: print all connections
-      src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`)
+		return "invalid command", nil
 	}
 }
