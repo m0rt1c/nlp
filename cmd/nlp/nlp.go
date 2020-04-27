@@ -11,7 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chromium-netlog-parser/pkg/nlparser"
+	"github.com/AndreaJegher/chromium-netlog-parser/pkg/build"
+	"github.com/AndreaJegher/chromium-netlog-parser/pkg/nlparser"
 )
 
 const (
