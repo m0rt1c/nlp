@@ -19,8 +19,9 @@ const (
 )
 
 var (
-	file = flag.String("f", "", "File to parse")
-	pc   = 0
+	file    = flag.String("f", "", "File to parse")
+	version = flag.Bool("version", false, "prints version")
+	pc      = 0
 )
 
 func parseFile(s string) (nlparser.NetLog, error) {
@@ -185,6 +186,11 @@ func main() {
 	flag.Parse()
 	var netlog nlparser.NetLog
 	var err error
+
+	if *version {
+		fmt.Printf("version: %s\n", build.Version())
+		return
+	}
 
 	if *file != "" {
 		netlog, err = parseFile(*file)
