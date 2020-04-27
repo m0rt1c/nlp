@@ -41,3 +41,8 @@ nlp -f /path/to/netlog.json
 nlp -f /path/to/netlog.json
 > extract dns
 ```
+
+## Building
+```bash
+make
+```
