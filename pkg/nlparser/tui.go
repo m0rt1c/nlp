@@ -155,76 +155,79 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 }
 
 func handleExtract(args []string, netlog *NetLog) (string, error) {
+	out := ""
 	switch args[0] {
 	case "dns":
 		for _, x := range netlog.FindDNSQueries() {
-			fmt.Println(x)
+			out += fmt.Sprintln(x)
 		}
+		return out, nil
 	case "url":
 		for _, x := range netlog.FindURLRequests() {
-			fmt.Println(x)
+			out += fmt.Sprintln(x)
 		}
+		return out, nil
 	case "red":
 		for _, x := range netlog.FindRedirections() {
-			fmt.Println(x)
+			out += fmt.Sprintln(x)
 		}
+		return out, nil
 	case "con":
 		for _, x := range netlog.FindOpenedSocket() {
-			fmt.Println(x)
+			out += fmt.Sprintln(x)
 		}
+		return out, nil
 	case "src":
 		if len(args) < 2 {
-			fmt.Println("Not enough arguments")
-		} else {
-			_, err := os.Stat(args[1])
-			if err != nil {
-				err := os.Mkdir(args[1], os.ModePerm)
-				if err != nil {
-					return "", err
-				}
-			}
-			fileCount := 0
-			res := netlog.FindSources()
-			for _, x := range res {
-				u, err := url.Parse(x.ResourceName)
-				if err != nil {
-					fmt.Println(err)
-					continue
-				}
-				parts := strings.Split(u.Path, "/")
-				name := parts[len(parts)-1]
-				if name == "" {
-					name = fmt.Sprintf("index-%d", fileCount)
-				}
-				_, err = os.Stat(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()))
-				if err != nil {
-					os.Mkdir(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()), os.ModePerm)
-				}
-				filePath := fmt.Sprintf("%s/%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname(), name)
-				file, err := os.Create(filePath)
-				if err != nil {
-					fmt.Printf("File %s was not created: %v\n", filePath, err)
-					continue
-				}
-				out := []byte{}
-				for _, part := range x.Base64EncodedBytes {
-					decoded, err := base64.StdEncoding.DecodeString(part)
-					if err != nil {
-						fmt.Printf("Skipped some bytes while writing %s because: %v\n", filePath, err)
-						continue
-					}
-					out = append(out, decoded...)
-				}
-				file.Write(out)
-				file.Close()
-				fileCount = fileCount + 1
-			}
-			fmt.Printf("Wrote %d out of %d files\n", fileCount, len(res))
+			return invalidCommandMessage, nil
 		}
+		_, err := os.Stat(args[1])
+		if err != nil {
+			err := os.Mkdir(args[1], os.ModePerm)
+			if err != nil {
+				return "", err
+			}
+		}
+		fileCount := 0
+		res := netlog.FindSources()
+		for _, x := range res {
+			u, err := url.Parse(x.ResourceName)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			parts := strings.Split(u.Path, "/")
+			name := parts[len(parts)-1]
+			if name == "" {
+				name = fmt.Sprintf("index-%d", fileCount)
+			}
+			_, err = os.Stat(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()))
+			if err != nil {
+				os.Mkdir(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()), os.ModePerm)
+			}
+			filePath := fmt.Sprintf("%s/%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname(), name)
+			file, err := os.Create(filePath)
+			if err != nil {
+				fmt.Printf("File %s was not created: %v\n", filePath, err)
+				continue
+			}
+			out := []byte{}
+			for _, part := range x.Base64EncodedBytes {
+				decoded, err := base64.StdEncoding.DecodeString(part)
+				if err != nil {
+					fmt.Printf("Skipped some bytes while writing %s because: %v\n", filePath, err)
+					continue
+				}
+				out = append(out, decoded...)
+			}
+			file.Write(out)
+			file.Close()
+			fileCount = fileCount + 1
+		}
+		return fmt.Sprintf("Wrote %d out of %d files\n", fileCount, len(res)), nil
 	case helpCase:
 		return extractCommandHelpMessage, nil
 	default:
 		return invalidCommandMessage, nil
 	}
-	return invalidCommandMessage, nil
 }
