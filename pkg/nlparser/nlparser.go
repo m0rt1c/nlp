@@ -405,7 +405,7 @@ func ParseNetLog(file string) (NetLog, error) {
 			line = strings.TrimSuffix(line, ",")
 			err := json.Unmarshal([]byte(line), &p)
 			if err != nil {
-				// Last line have a trailing ]} instead of a ,
+				// Last line probably has a trailing ]} instead of a ,
 				line = strings.TrimSuffix(line, "]}")
 				err = json.Unmarshal([]byte(line), &p)
 				if err != nil {
