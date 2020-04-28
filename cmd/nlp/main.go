@@ -49,11 +49,11 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Print("> ")
-		out, err := nlparser.HandleCommand(fmt.Sprintf("%s", bytes), netlog)
+		out, err := nlparser.HandleCommand(fmt.Sprintf("%s", bytes), &netlog)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
-		fmt.Prinltn(out)
+		fmt.Println(out)
 	}
 }
