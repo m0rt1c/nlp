@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/AndreaJegher/chromium-netlog-parser/pkg/build"
 	"github.com/AndreaJegher/chromium-netlog-parser/pkg/nlparser"
@@ -46,7 +47,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(out)
+		fmt.Println(strings.TrimSuffix(out, "\n"))
 		return
 	}
 
@@ -63,6 +64,6 @@ func main() {
 			log.Println(err)
 			continue
 		}
-		fmt.Println(out)
+		fmt.Println(strings.TrimSuffix(out, "\n"))
 	}
 }
