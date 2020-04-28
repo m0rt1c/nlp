@@ -105,37 +105,38 @@ func ParseFile(s string) (NetLog, error) {
 func handleShow(args []string, netlog *NetLog) (string, error) {
 	switch args[0] {
 	case "range":
-		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
+		return fmt.Sprintf("IDs range from 1 to %d", len(netlog.Events)), nil
 	case "id":
 		if len(args) < 2 {
 			return invalidCommandMessage, nil
 		}
 		index, err := strconv.ParseInt(args[1], 10, 64)
 		if err != nil {
-			return invalidCommandMessage, nil
+			return "", err
 		}
 		e, ok := netlog.Events[int(index)]
 		if !ok {
-			fmt.Printf("IDs range from 0 to %d\n", len(netlog.Events))
-		} else {
-			fmt.Println(e)
+			return fmt.Sprintf("IDs range from 0 to %d", len(netlog.Events)), nil
 		}
+		return fmt.Sprintf("%s", e), nil
 	case "all":
+		out := ""
 		for k := range netlog.Events {
-			fmt.Println(netlog.Events[k])
+			out += fmt.Sprintln(netlog.Events[k])
 		}
+		return out, nil
 	case "next":
 		pc = pc + 1
 		if pc > len(netlog.Events) {
 			pc = 1
 		}
-		fmt.Println(netlog.Events[pc])
+		return fmt.Sprintln(netlog.Events[pc]), nil
 	case "prev":
 		pc = pc - 1
 		if pc <= 0 {
 			pc = len(netlog.Events)
 		}
-		fmt.Println(netlog.Events[pc])
+		return fmt.Sprintln(netlog.Events[pc]), nil
 	case "set":
 		if len(args) < 2 {
 			return invalidCommandMessage, nil
@@ -145,12 +146,12 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 			return "", err
 		}
 		pc = int(index)
+		return "position updated", nil
 	case helpCase:
 		return showCommandHelpMessage, nil
 	default:
 		return invalidCommandMessage, nil
 	}
-	return invalidCommandMessage, nil
 }
 
 func handleExtract(args []string, netlog *NetLog) (string, error) {
