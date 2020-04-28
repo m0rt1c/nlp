@@ -30,6 +30,7 @@ const (
       red: print all redirections
       con: print all connections
       src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`
+	invalidCommandMessage = `invalid command`
 )
 
 // Help returns the program instructions
@@ -39,22 +40,24 @@ func Help() string {
 
 // HandleCommand parse and execute command on the given netlog
 func HandleCommand(command string, netlog *NetLog) (string, error) {
-	pieces := strings.Split(fmt.Sprintf("%s", bytes), " ")
+	pieces := strings.Split(command, " ")
 	if len(pieces) < 1 {
-		return "invalid command", nil
+		return invalidCommandMessage, nil
 	}
 	switch pieces[0] {
 	case "?":
 		fallthrough
 	case "help":
-		return Help()
+		return Help(), nil
 	case "p":
 		fallthrough
 	case "parse":
 		if len(pieces) < 2 {
-			return "invalid command", nil
+			return invalidCommandMessage, nil
 		}
-		netlog, err = parseFile(pieces[1])
+		nl, err := ParseFile(pieces[1])
+		// TODO: reconsider this
+		*netlog = nl
 		if err != nil {
 			return "", err
 		}
@@ -78,8 +81,9 @@ func HandleCommand(command string, netlog *NetLog) (string, error) {
 	case "quit":
 		os.Exit(0)
 	default:
-		return "invalid command", nil
+		return invalidCommandMessage, nil
 	}
+	return "I did nothing", nil
 }
 
 // ParseFile parse a netlog json file
@@ -142,7 +146,7 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 	case help:
 		fallthrough
 	default:
-		return "invalid command", nil
+		return invalidCommandMessage, nil
 	}
 }
 
@@ -217,6 +221,6 @@ func handleExtract(args []string, netlog *NetLog) (string, error) {
 	case help:
 		fallthrough
 	default:
-		return "invalid command", nil
+		return invalidCommandMessage, nil
 	}
 }
