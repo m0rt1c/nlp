@@ -31,6 +31,7 @@ const (
       src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`
 	invalidCommandMessage = `invalid command`
 	helpCase              = "help"
+	maxFilenameLength     = 255
 )
 
 // TODO: move this counter to a struct
@@ -206,6 +207,10 @@ func handleExtract(args []string, netlog *NetLog) (string, error) {
 				os.Mkdir(fmt.Sprintf("%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname()), os.ModePerm)
 			}
 			filePath := fmt.Sprintf("%s/%s/%s", strings.TrimSuffix(args[1], "/"), u.Hostname(), name)
+			if len(filePath) > maxFilenameLength {
+				fmt.Printf("Trimming %s name beacuse it is too long\n", filePath)
+				filePath = filePath[:maxFilenameLength]
+			}
 			file, err := os.Create(filePath)
 			if err != nil {
 				fmt.Printf("File %s was not created: %v\n", filePath, err)
