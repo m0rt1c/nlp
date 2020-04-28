@@ -3,7 +3,6 @@ package nlparser
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"strconv"
@@ -143,8 +142,7 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 		}
 		index, err := strconv.ParseInt(args[1], 10, 64)
 		if err != nil {
-			log.Println(err)
-			return invalidCommandMessage, nil
+			return "", err
 		}
 		pc = int(index)
 	case helpCase:
