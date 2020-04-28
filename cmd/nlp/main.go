@@ -41,6 +41,15 @@ func main() {
 		}
 	}
 
+	if *command != "" {
+		out, err := nlparser.HandleCommand(*command, &netlog)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(out)
+		return
+	}
+
 	running := true
 	reader := bufio.NewReader(os.Stdin)
 	for running {
