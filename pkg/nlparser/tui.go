@@ -31,7 +31,11 @@ const (
       con: print all connections
       src <path>: save all sources in the given directory. You also need to have captured the netlog with the --net-log-capture-mode=Everything flag.`
 	invalidCommandMessage = `invalid command`
+	helpCase              = "help"
 )
+
+// TODO: move this counter to a struct
+var pc = 0
 
 // Help returns the program instructions
 func Help() string {
@@ -47,7 +51,7 @@ func HandleCommand(command string, netlog *NetLog) (string, error) {
 	switch pieces[0] {
 	case "?":
 		fallthrough
-	case "help":
+	case helpCase:
 		return Help(), nil
 	case "p":
 		fallthrough
@@ -83,11 +87,12 @@ func HandleCommand(command string, netlog *NetLog) (string, error) {
 	default:
 		return invalidCommandMessage, nil
 	}
-	return "I did nothing", nil
+	return invalidCommandMessage, nil
 }
 
 // ParseFile parse a netlog json file
 func ParseFile(s string) (NetLog, error) {
+	pc = 0
 	info, err := os.Stat(s)
 	if err != nil {
 		return NetLog{}, err
@@ -104,12 +109,11 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 		fmt.Printf("IDs range from 1 to %d\n", len(netlog.Events))
 	case "id":
 		if len(args) < 2 {
-			return
+			return invalidCommandMessage, nil
 		}
 		index, err := strconv.ParseInt(args[1], 10, 64)
 		if err != nil {
-			log.Println(err)
-			return
+			return invalidCommandMessage, nil
 		}
 		e, ok := netlog.Events[int(index)]
 		if !ok {
@@ -135,19 +139,20 @@ func handleShow(args []string, netlog *NetLog) (string, error) {
 		fmt.Println(netlog.Events[pc])
 	case "set":
 		if len(args) < 2 {
-			return
+			return invalidCommandMessage, nil
 		}
 		index, err := strconv.ParseInt(args[1], 10, 64)
 		if err != nil {
 			log.Println(err)
-			return
+			return invalidCommandMessage, nil
 		}
 		pc = int(index)
-	case help:
-		fallthrough
+	case helpCase:
+		return showCommandHelpMessage, nil
 	default:
 		return invalidCommandMessage, nil
 	}
+	return invalidCommandMessage, nil
 }
 
 func handleExtract(args []string, netlog *NetLog) (string, error) {
@@ -176,8 +181,7 @@ func handleExtract(args []string, netlog *NetLog) (string, error) {
 			if err != nil {
 				err := os.Mkdir(args[1], os.ModePerm)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return "", err
 				}
 			}
 			fileCount := 0
@@ -218,9 +222,10 @@ func handleExtract(args []string, netlog *NetLog) (string, error) {
 			}
 			fmt.Printf("Wrote %d out of %d files\n", fileCount, len(res))
 		}
-	case help:
-		fallthrough
+	case helpCase:
+		return extractCommandHelpMessage, nil
 	default:
 		return invalidCommandMessage, nil
 	}
+	return invalidCommandMessage, nil
 }
