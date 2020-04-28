@@ -44,11 +44,11 @@ func main() {
 	running := true
 	reader := bufio.NewReader(os.Stdin)
 	for running {
+		fmt.Print("> ")
 		bytes, _, err := reader.ReadLine()
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Print("> ")
 		out, err := nlparser.HandleCommand(fmt.Sprintf("%s", bytes), &netlog)
 		if err != nil {
 			log.Println(err)
