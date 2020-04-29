@@ -191,6 +191,9 @@ func handleExtract(args []string, netlog *NetLog) (string, error) {
 		}
 		fileCount := 0
 		res := netlog.FindSources()
+		if len(res) < 1 {
+			return "No sources to extract were found", nil
+		}
 		for _, x := range res {
 			u, err := url.Parse(x.ResourceName)
 			if err != nil {
