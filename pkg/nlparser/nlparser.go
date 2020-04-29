@@ -293,7 +293,7 @@ func (n NetLog) FindSources() []Source {
 		for _, p := range e.Parts {
 			u, ok := p.Params["url"]
 			if ok {
-				// if in the case there are multiple urls it means
+				// if in this case there are multiple urls it means
 				// there were some redirection
 				// so we take the last url in the chain of redirections
 				s.ResourceName = fmt.Sprintf("%s", u)
