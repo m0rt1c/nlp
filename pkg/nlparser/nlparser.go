@@ -300,7 +300,11 @@ func (n NetLog) FindSources() []Source {
 				s.ResourceName = fmt.Sprintf("%s", u)
 			}
 			// unencrypted data
-			if p.Type == 111 {
+			t, ok := n.StringToEventType["URL_REQUEST_JOB_FILTERED_BYTES_READ"]
+			if !ok {
+				t = 110
+			}
+			if p.Type == t {
 				b, ok := p.Params["bytes"]
 				if ok {
 					s.Base64EncodedBytes = append(s.Base64EncodedBytes, fmt.Sprintf("%s", b))
