@@ -146,7 +146,7 @@ type (
 	NetLog struct {
 		Events             map[int]Event
 		EventTypesToString map[int]string
-		StringToEventType  map[int]string
+		StringToEventType  map[string]int
 	}
 
 	// Redirection http redirection
@@ -368,6 +368,7 @@ func (e Event) String() string {
 func ParseNetLog(file string) (NetLog, error) {
 	var netlog NetLog
 	netlog.EventTypesToString = make(map[int]string)
+	netlog.StringToEventType = make(map[string]int)
 	netlog.Events = make(map[int]Event)
 
 	f, err := os.Open(file)
@@ -397,9 +398,11 @@ func ParseNetLog(file string) (NetLog, error) {
 			}
 			for k, v := range f["constants"].(map[string]interface{})["logEventTypes"].(map[string]interface{}) {
 				netlog.EventTypesToString[int(v.(float64))] = k
+				netlog.StringToEventType[k] = int(v.(float64))
 			}
 			for k, v := range f["constants"].(map[string]interface{})["logSourceType"].(map[string]interface{}) {
 				netlog.EventTypesToString[int(v.(float64))] = k
+				netlog.StringToEventType[k] = int(v.(float64))
 			}
 		} else {
 			p := EventPart{}
