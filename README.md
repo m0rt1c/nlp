@@ -10,8 +10,14 @@ Command line parser for chromium netlog
 Visit [chrome://net-export](chrome://net-export)
 
 ### From command line
+You can collect the netlog with either google-chrome or chromium
+
 ```bash
 chromium --log-net-log=/tmp/netlog.json --net-log-capture-mode=Everything
+```
+```bash
+google-chrome-stable --log-net-log=/tmp/netlog.json --net-log-capture-mode=Everything
+# <any-google-chrome-binary> --log-net-log=/tmp/netlog.json --net-log-capture-mode=Everything
 ```
 The netlog capture mode flag is necessary to extract the sources.
 
@@ -73,7 +79,24 @@ nlp
 > help
 ```
 
-## Building
+## Building and Installing
+
+### Obtaing the code
 ```bash
+go get github.com/AndreaJegher/chrome-netlog-parser/...
+```
+The repo with the code will be created in your default go source folder
+
+### Installing
+```bash
+go get github.com/AndreaJegher/chrome-netlog-parser/...
+go install github.com/AndreaJegher/chrome-netlog-parser/...
+```
+If you have the default go binary folder in your path, you can start the program by using the `nlp` command
+
+### Building
+```bash
+go get github.com/AndreaJegher/chrome-netlog-parser/...
+cd $GOPATH/src/github.com/AndreaJegher/chrome-netlog-parser
 make
 ```
