@@ -1,6 +1,6 @@
 GO ?= go
 GITREF = $(shell git describe --always --long --tags --dirty)
-GOBUILD_FLAGS = -ldflags "-X github.com/AndreaJegher/chromium-netlog-parser/pkg/build.gitCommitID=$(GITREF)"
+GOBUILD_FLAGS = -ldflags "-X github.com/AndreaJegher/nlp/pkg/build.gitCommitID=$(GITREF)"
 
 GOINSTALL = $(GO) install
 GOBUILD = $(GO) build
