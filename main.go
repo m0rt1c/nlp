@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/AndreaJegher/chromium-netlog-parser/pkg/build"
-	"github.com/AndreaJegher/chromium-netlog-parser/pkg/nlparser"
+	"github.com/AndreaJegher/nlp/pkg/build"
+	"github.com/AndreaJegher/nlp/pkg/nlparser"
 )
 
 const (

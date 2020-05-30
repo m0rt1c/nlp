@@ -1,5 +1,3 @@
-module github.com/AndreaJegher/chrome-netlog-parser
+module github.com/AndreaJegher/nlp
 
 go 1.14
-
-require github.com/AndreaJegher/chromium-netlog-parser v0.0.0-20200506191539-62711760b962

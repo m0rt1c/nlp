@@ -1,4 +1,4 @@
-# chromium-netlog-parser
+# nlp
 Command line parser for chromium netlog
 
 ## NetLog
