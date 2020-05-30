@@ -14,7 +14,7 @@ install: install-nlp
 build: build-nlp
 
 install-nlp:
-	cd cmd/nlp; $(GOINSTALL) $(GOBUILD_FLAGS)
+	$(GOINSTALL) $(GOBUILD_FLAGS)
 
 build-nlp:
-	$(GOBUILD) $(GOBUILD_FLAGS) -o ./bin/nlp ./cmd/nlp
+	$(GOBUILD) $(GOBUILD_FLAGS) -o ./bin/nlp
