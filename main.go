@@ -51,9 +51,8 @@ func main() {
 		return
 	}
 
-	running := true
 	reader := bufio.NewReader(os.Stdin)
-	for running {
+	for {
 		fmt.Print("> ")
 		bytes, _, err := reader.ReadLine()
 		if err != nil {
