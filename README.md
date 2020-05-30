@@ -83,20 +83,19 @@ nlp
 
 ### Obtaing the code
 ```bash
-go get github.com/AndreaJegher/chrome-netlog-parser/...
+go get github.com/AndreaJegher/nlp
 ```
 The repo with the code will be created in your default go source folder
 
 ### Installing
 ```bash
-go get github.com/AndreaJegher/chrome-netlog-parser/...
-go install github.com/AndreaJegher/chrome-netlog-parser/...
+go install github.com/AndreaJegher/nlp
 ```
 If you have the default go binary folder in your path, you can start the program by using the `nlp` command
 
 ### Building
 ```bash
-go get github.com/AndreaJegher/chrome-netlog-parser/...
-cd $GOPATH/src/github.com/AndreaJegher/chrome-netlog-parser
+go get github.com/AndreaJegher/nlp
+cd $GOPATH/src/github.com/AndreaJegher/nlp
 make
 ```
